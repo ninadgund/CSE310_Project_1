@@ -11,16 +11,6 @@ using namespace std;
 
 int main(int argc, char** argv)
 {
-    if (argc < 2)
-    {
-       return EXIT_FAILURE;
-    }
-    
-    for (int i = 0; i < argc; ++i)
-    {
-        std::cout << argv[i] << std::endl;
-    }
-
     symbol Symbols[NSYMBOLS];
     for (int i = 0; i < NSYMBOLS; i++)
     {
@@ -33,24 +23,16 @@ int main(int argc, char** argv)
     }
 
     FILE* preFile;
-    char c = 0;
-
-    preFile = fopen(argv[1], "r");
-    if (preFile == NULL)
+    char c = getc(stdin);
+    while (c != EOF)
     {
-       return EXIT_FAILURE;
-    }
-
-    while (!feof(preFile))
-    {
-       c = getc(preFile);
        int i = c;
        if (i >= 0 && i < NSYMBOLS)
        {
            Symbols[i].freq++;
        }
+       c = getc(stdin);
     }
-    fclose(preFile);
 
     for (int i = 0; i < NSYMBOLS; i++)
     {
