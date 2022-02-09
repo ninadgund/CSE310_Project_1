@@ -83,7 +83,7 @@ bool symbolSort(TreeArray Symbols, int num, SortAlgo mode)
     return false;
 }
 
-bool constructBTree(TreeArray Symbols, int num)
+int constructBTree(TreeArray Symbols, int num)
 {
     while (num > 1)
     {
@@ -113,10 +113,57 @@ bool constructBTree(TreeArray Symbols, int num)
             }
             Symbols[i - step] = Symbols[i];
         }
+        if (step == 2)
+        {
+            Symbols[num - step] = currTree;
+        }
         num--;
-//        cout << currTree->freq << endl;
     }
-    return true;
+    return num;
+}
+
+tree * combineTrees(tree * left, tree * right)
+{
+    symbol * rootNode = new symbol;
+    rootNode->parent = NULL;
+    rootNode->freq = left->freq + right->freq;
+    rootNode->left = left->root;
+    rootNode->right = right->root;
+
+    left->root->parent = rootNode;
+    right->root->parent = rootNode;
+
+    tree * rootTree = new tree;
+    rootTree-> freq = rootNode->freq;
+    rootTree->root = rootNode;
+    return rootTree;
+}
+
+void encodeTree(symbol * symNode, char bit, int level)
+{
+    if(symNode == NULL)
+    {
+        return;
+    }
+    if (level < E_LEN)
+    {
+        strncpy(symNode->encoding, symNode->parent->encoding, level);
+        symNode->encoding[level] = bit;
+        symNode->encoding[level+1] = '\0';
+        encodeTree(symNode->left, '0', level + 1);
+        encodeTree(symNode->right, '1', level + 1);
+    }
+}
+
+void encodeTree(tree * rootTree)
+{
+    encodeTree(rootTree->root->left, '0', 0);
+    encodeTree(rootTree->root->right, '1', 0);
+}
+
+string encodeChar(symbol * Symbols, char c)
+{
+    return string(Symbols[(int)c].encoding);
 }
 
 int main(int argc, char** argv)
@@ -189,14 +236,6 @@ int main(int argc, char** argv)
     }
     preFile.close();
 
-    /*
-        // Out preprocessed data (TODO remove later)
-        for (int i = 0; i < NSYMBOLS; i++)
-        {
-            cout << i << "\t" << Symbols[i].freq << "\n";
-        }
-    */
-
     TreeArray alpha = new tree*[alphaCount];
     TreeArray nonAlpha = new tree*[nonAlphaCount];
     int alphaItr = 0;
@@ -206,35 +245,61 @@ int main(int argc, char** argv)
     {
         if (Symbols[i].freq > 0)
         {
-//            cout << Symbols[i].freq << endl;
             if (isalpha(Symbols[i].symbol))
             {
                 itr = new tree;
-                alpha[alphaItr] = itr;
                 itr->index = i;
                 itr->symbol = Symbols[i].symbol;
                 itr->freq = Symbols[i].freq;
                 itr->root = &Symbols[i];
+                alpha[alphaItr] = itr;
                 alphaItr++;
             }
             else
             {
                 itr = new tree;
-                nonAlpha[nonAlphaItr] = itr;
                 itr->index = i;
                 itr->symbol = Symbols[i].symbol;
                 itr->freq = Symbols[i].freq;
                 itr->root = &Symbols[i];
+                nonAlpha[nonAlphaItr] = itr;
                 nonAlphaItr++;
             }
         }
     }
-
+    
     symbolSort(alpha, alphaCount, mode);
     symbolSort(nonAlpha, nonAlphaCount, mode);
 
     constructBTree(alpha, alphaCount);
-    constructBTree(nonAlpha, alphaCount);
+    constructBTree(nonAlpha, nonAlphaCount);
+
+    tree * rootTree = combineTrees(alpha[0], nonAlpha[0]);
+    delete alpha[0];
+    delete nonAlpha[0];
+
+    encodeTree(rootTree);
+
+    // printing encoding output
+    cout << (alphaCount + nonAlphaCount) << '\n';
+    for (int i = 0; i < NSYMBOLS; i++)
+    {
+        if (Symbols[i].freq > 0)
+        {
+            cout << i << '\t' << Symbols[i].symbol << '\t' << Symbols[i].encoding << '\n';
+        }
+    }
+
+    // Actually encoding the new input
+    string in_line;
+    while (getline(cin, in_line))
+    {
+        for (int i = 0; i < in_line.length(); i++)
+        {
+            cout << encodeChar(Symbols, in_line[i]);
+        }
+        cout << encodeChar(Symbols, '\n') << '\n';
+    }
 
     return 0;
 }
