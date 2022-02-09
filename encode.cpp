@@ -290,6 +290,7 @@ int main(int argc, char** argv)
         }
     }
 
+    cout << '\n';
     // Actually encoding the new input
     string in_line;
     while (getline(cin, in_line))
@@ -298,7 +299,7 @@ int main(int argc, char** argv)
         {
             cout << encodeChar(Symbols, in_line[i]);
         }
-        cout << encodeChar(Symbols, '\n') << '\n';
+        cout << encodeChar(Symbols, '\n');
     }
 
     return 0;

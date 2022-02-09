@@ -31,10 +31,14 @@ int main(int argc, char** argv)
        }
        c = getc(stdin);
     }
+    Symbols[(int)'\n'].freq++;
 
     for (int i = 0; i < NSYMBOLS; i++)
     {
-        cout << i << "\t" << Symbols[i].freq << "\n";
+        if (Symbols[i].freq > 0)
+        {
+            cout << i << "\t" << Symbols[i].freq << "\n";
+        }
     }
 
     return 0;

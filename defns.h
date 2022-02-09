@@ -1,7 +1,7 @@
 // File defns.h
 
 #define	NSYMBOLS		128
-#define	E_LEN			8
+#define	E_LEN			24
 
 struct symbol {
 	char symbol; // ASCII symbol
