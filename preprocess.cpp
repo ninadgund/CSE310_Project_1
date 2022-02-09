@@ -1,7 +1,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <cstring>
 #include <stdio.h>
 
@@ -22,7 +21,6 @@ int main(int argc, char** argv)
         memset(Symbols[i].encoding, 0, E_LEN);
     }
 
-    FILE* preFile;
     char c = getc(stdin);
     while (c != EOF)
     {
