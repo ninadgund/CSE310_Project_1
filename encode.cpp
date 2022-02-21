@@ -97,7 +97,7 @@ void merge(TreeArray Symbols, int p, int q, int r)
     while (lItr < ln && rItr < rn)
     {
         if (symbolComp(lArr[lItr], rArr[rItr]) <= 0)
-        if (lArr[lItr] <= rArr[rItr])
+//        if (lArr[lItr] <= rArr[rItr])
         {
             Symbols[mergedItr] = lArr[lItr];
             lItr++;
@@ -122,8 +122,8 @@ void merge(TreeArray Symbols, int p, int q, int r)
         rItr++;
         mergedItr++;
     }
-//    delete lArr;
-//    delete rArr;
+    delete lArr;
+    delete rArr;
 }
 
 // Internal recursive function for mergesort
@@ -142,31 +142,35 @@ void mergeSort_rec(TreeArray Symbols, int p, int r)
 // Wrapper function for merge sort, sorts the array in place
 void mergeSort(TreeArray Symbols, int num)
 {
-    for (int i = 0; i < num; i++)
-    {
-        cout << Symbols[i]->root->symbol << "|\t";
-    }
-    cout << "\nSorting" << endl;
     mergeSort_rec(Symbols, 0, num - 1);
-    for (int i = 0; i < num; i++)
-    {
-        cout << Symbols[i]->root->symbol << "|\t";
-    }
-    cout << "\nDone" << endl;
 }
 
 // Sorts the array using specified sorting algo
 bool symbolSort(TreeArray Symbols, int num, SortAlgo mode)
 {
+    for (int i = 0; i < num; i++)
+    {
+        cout << Symbols[i]->root->symbol << "|\t";
+    }
+    cout << "\nSorting" << endl;
     if (mode == SortAlgo::INSERTION_SORT)
     {
         insertionSort(Symbols, num);
+    for (int i = 0; i < num; i++)
+    {
+        cout << Symbols[i]->root->symbol << "|\t";
+    }
+    cout << "\nDone" << endl;
         return true;                                // Return success
     }
     else if (mode == SortAlgo::MERGE_SORT)
     {
-//        cout << "hi";
         mergeSort(Symbols, num);
+    for (int i = 0; i < num; i++)
+    {
+        cout << Symbols[i]->root->symbol << "|\t";
+    }
+    cout << "\nDone" << endl;
         return true;                                // Return success
     }
     return false;                                   // Return failure
