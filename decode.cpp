@@ -97,14 +97,13 @@ void merge(TreeArray Symbols, int p, int q, int r)
     while (lItr < ln && rItr < rn)
     {
         if (symbolComp(lArr[lItr], rArr[rItr]) <= 0)
-//        if (lArr[lItr] <= rArr[rItr])
         {
             Symbols[mergedItr] = lArr[lItr];
             lItr++;
         }
         else
         {
-            Symbols[rItr] = rArr[rItr];
+            Symbols[mergedItr] = rArr[rItr];
             rItr++;
         }
         mergedItr++;
