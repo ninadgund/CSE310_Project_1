@@ -13,6 +13,7 @@ using namespace std;
 
 typedef tree **TreeArray;
 
+// Types of sorting algorithms supported and implemented
 enum class SortAlgo
 {
     DEFAULT_NONE,
@@ -20,8 +21,10 @@ enum class SortAlgo
     MERGE_SORT,
 };
 
+// Comparison logic to be used between tree nodes
 int symbolComp(const tree * s1, const tree * s2)
 {
+    // First comparing based on frequency
     if (s1->freq > s2->freq)
     {
         return 1;
@@ -32,6 +35,7 @@ int symbolComp(const tree * s1, const tree * s2)
     }
     else
     {
+        // In case of same frequency, compare based on lexicographical value
         if (s1->symbol > s2->symbol)
         {
             return 1;
@@ -47,7 +51,8 @@ int symbolComp(const tree * s1, const tree * s2)
     }
 }
 
-bool insertionSort(TreeArray Symbols, int num)
+// Iterative function for insertion sort, sorts the array in place
+void insertionSort(TreeArray Symbols, int num)
 {
     int i, j;
     tree * key;
@@ -62,27 +67,112 @@ bool insertionSort(TreeArray Symbols, int num)
         }
         Symbols[j + 1] = key;
     }
-    return true;
 }
 
-bool mergeSort(TreeArray Symbols, int num)
+// Internal merge function for mergesort
+void merge(TreeArray Symbols, int p, int q, int r)
 {
-    return false;
+    int ln = q - p + 1;
+    int rn = r - q;
+
+    // Temporary left, right subarrays
+    TreeArray lArr = new tree*[ln];
+    TreeArray rArr = new tree*[rn];
+    
+    // Coping data to temp arrays
+    for (int i = 0; i < ln; i++)
+    {
+        lArr[i] = Symbols[p + i];
+    }
+    for (int i = 0; i < rn; i++)
+    {
+        rArr[i] = Symbols[q + 1 + i];
+    }
+
+    int lItr = 0;
+    int rItr = 0;
+    int mergedItr = p;
+
+    // Merging temp arrays to original array
+    while (lItr < ln && rItr < rn)
+    {
+        if (symbolComp(lArr[lItr], rArr[rItr]) <= 0)
+        if (lArr[lItr] <= rArr[rItr])
+        {
+            Symbols[mergedItr] = lArr[lItr];
+            lItr++;
+        }
+        else
+        {
+            Symbols[rItr] = rArr[rItr];
+            rItr++;
+        }
+        mergedItr++;
+    }
+    // Copy remaining elements, if any
+    while (lItr < ln)
+    {
+        Symbols[mergedItr] = lArr[lItr];
+        lItr++;
+        mergedItr++;
+    }
+    while (rItr < rn)
+    {
+        Symbols[mergedItr] = rArr[rItr];
+        rItr++;
+        mergedItr++;
+    }
+//    delete lArr;
+//    delete rArr;
 }
 
+// Internal recursive function for mergesort
+void mergeSort_rec(TreeArray Symbols, int p, int r)
+{
+    if (p >= r)
+    {
+        return;
+    }
+    int q = p + ((r - p) / 2);
+    mergeSort_rec(Symbols, p, q);
+    mergeSort_rec(Symbols, q + 1, r);
+    merge(Symbols, p, q, r);
+}
+
+// Wrapper function for merge sort, sorts the array in place
+void mergeSort(TreeArray Symbols, int num)
+{
+    for (int i = 0; i < num; i++)
+    {
+        cout << Symbols[i]->root->symbol << "|\t";
+    }
+    cout << "\nSorting" << endl;
+    mergeSort_rec(Symbols, 0, num - 1);
+    for (int i = 0; i < num; i++)
+    {
+        cout << Symbols[i]->root->symbol << "|\t";
+    }
+    cout << "\nDone" << endl;
+}
+
+// Sorts the array using specified sorting algo
 bool symbolSort(TreeArray Symbols, int num, SortAlgo mode)
 {
     if (mode == SortAlgo::INSERTION_SORT)
     {
-        return insertionSort(Symbols, num);
+        insertionSort(Symbols, num);
+        return true;                                // Return success
     }
     else if (mode == SortAlgo::MERGE_SORT)
     {
-        return mergeSort(Symbols, num);
+//        cout << "hi";
+        mergeSort(Symbols, num);
+        return true;                                // Return success
     }
-    return false;
+    return false;                                   // Return failure
 }
 
+// Constructs btree from tree* array iteratively
 int constructBTree(TreeArray Symbols, int num)
 {
     while (num > 1)
@@ -122,6 +212,7 @@ int constructBTree(TreeArray Symbols, int num)
     return num;
 }
 
+// Returns a new node with left and right nodes as l, r params
 tree * combineTrees(tree * left, tree * right)
 {
     symbol * rootNode = new symbol;
@@ -139,6 +230,7 @@ tree * combineTrees(tree * left, tree * right)
     return rootTree;
 }
 
+// Traverses the btree to set the encoding value of all node characters
 void encodeTree(symbol * symNode, char bit, int level)
 {
     if(symNode == NULL)
@@ -155,12 +247,14 @@ void encodeTree(symbol * symNode, char bit, int level)
     }
 }
 
+// Wrapper function to encode all characters in the btree
 void encodeTree(tree * rootTree)
 {
     encodeTree(rootTree->root->left, '0', 0);
     encodeTree(rootTree->root->right, '1', 0);
 }
 
+// Getter function to return encoded value of a character
 string encodeChar(symbol * Symbols, char c)
 {
     return string(Symbols[(int)c].encoding);
