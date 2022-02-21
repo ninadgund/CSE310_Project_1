@@ -148,35 +148,14 @@ void mergeSort(TreeArray Symbols, int num)
 // Sorts the array using specified sorting algo
 bool symbolSort(TreeArray Symbols, int num, SortAlgo mode)
 {
-    /*
-    for (int i = 0; i < num; i++)
-    {
-        cout << Symbols[i]->root->symbol << "|\t";
-    }
-    cout << "\nSorting" << endl;
-    */
     if (mode == SortAlgo::INSERTION_SORT)
     {
         insertionSort(Symbols, num);
-        /*
-        for (int i = 0; i < num; i++)
-        {
-            cout << Symbols[i]->root->symbol << "|\t";
-        }
-        cout << "\nDone" << endl;
-        */
         return true;                                // Return success
     }
     else if (mode == SortAlgo::MERGE_SORT)
     {
         mergeSort(Symbols, num);
-        /*
-        for (int i = 0; i < num; i++)
-        {
-            cout << Symbols[i]->root->symbol << "|\t";
-        }
-        cout << "\nDone" << endl;
-        */
         return true;                                // Return success
     }
     return false;                                   // Return failure
@@ -268,6 +247,40 @@ void encodeTree(tree * rootTree)
 string encodeChar(symbol * Symbols, char c)
 {
     return string(Symbols[(int)c].encoding);
+}
+
+// Function to decode encoded string using btree
+string decodeText(tree * rootNode, string &input)
+{
+    string out = "";
+    symbol * node = rootNode->root;
+    for (int i = 0; i < input.length(); i++)
+    {
+        if(input[i] == '0')
+        {
+            if (node->left == nullptr)
+            {
+                out += node->symbol;
+                node = rootNode->root;
+                i--;
+                continue;
+            }
+            node = node->left;
+        }
+        else if(input[i] == '1')
+        {
+            if (node->right == nullptr)
+            {
+                out += node->symbol;
+                node = rootNode->root;
+                i--;
+                continue;
+            }
+            node = node->right;
+        }
+    }
+    out += '\n';
+    return out;
 }
 
 int main(int argc, char** argv)
@@ -382,29 +395,26 @@ int main(int argc, char** argv)
     delete alpha[0];
     delete nonAlpha[0];
 
-    encodeTree(rootTree);
-
-    // printing encoding output
-    cout << (alphaCount + nonAlphaCount) << '\n';
-    for (int i = 0; i < NSYMBOLS; i++)
-    {
-        if (Symbols[i].freq > 0)
-        {
-            cout << i << '\t' << Symbols[i].symbol << '\t' << Symbols[i].encoding << '\n';
-        }
-    }
-
-    cout << '\n';
-    // Actually encoding the new input
+    // Reading 'n', number of symbols with non zero frequency
     string in_line;
-    while (getline(cin, in_line))
+    int sym_n = 0;
+    if (getline(cin, in_line))
     {
-        for (int i = 0; i < in_line.length(); i++)
+        sym_n = stoi(in_line);
+        for (int i = 0; i < (sym_n + 2); i++)
         {
-            cout << encodeChar(Symbols, in_line[i]);
+            getline(cin, in_line);
         }
-        cout << encodeChar(Symbols, '\n');
     }
+
+    // Reading encoded input
+    string plaintext;
+    if(getline(cin, in_line))
+    {
+        plaintext = decodeText(rootTree, in_line);
+    }
+    // Printing decoded output
+    cout << plaintext;
 
     return 0;
 }
